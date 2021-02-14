@@ -6,6 +6,7 @@ import morgan from 'morgan';
 import mongoose from 'mongoose';
 import detectPort from 'detect-port';
 import chalk from 'chalk';
+import dotenv from 'dotenv';
 
 // api
 import auth from './api/auth.js';
@@ -15,15 +16,21 @@ import docs from './utils/api-doc.js';
 // utils
 import { authenticateUser } from './utils/auth.js';
 
+dotenv.config();
+console.log(process.env.MONGODB_URI);
+console.log(process.env.NODE_ENV);
 // mongo db
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-mongoose.connect(
-  'mongodb+srv://sorayeon:gate33%23%23@cluster0.zmvkk.mongodb.net/sorayeon?retryWrites=true&w=majority',
-  {
+mongoose
+  .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
-  },
-);
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+  })
+  .then(() => console.log('MongoDB Connected....'))
+  .catch(err => console.log(err));
 mongoose.Promise = global.Promise;
 
 // server setup
